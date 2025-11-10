@@ -14,7 +14,9 @@ font = pg.font.Font(None, 50)
 
 # --- 画像読み込み補助 ---
 def load_image(path, required=True):
-    """ファイル存在をチェックして読み込み（失敗時は分かりやすく例外を出す）"""
+    """
+    ファイル存在をチェックして読み込み（失敗時は分かりやすく例外を出す）
+    """
     if not os.path.isfile(path):
         if required:
             raise FileNotFoundError(f"画像ファイルが見つかりません: {path}")
@@ -64,13 +66,18 @@ if gameover_img:
 
 # --- クラス定義 ---
 class Player(pg.sprite.Sprite):
+    """主人公キャラクターを表すクラス。矢印キーで操作可能。"""
+
     def __init__(self):
+        """Player インスタンスを初期化する。"""
         super().__init__()
         self.image = player_img
         self.rect = self.image.get_rect(center=(WIDTH//2, HEIGHT-60))
         self.speed = 6
 
     def update(self):
+        """プレイヤー位置を更新する。キー入力に応じて移動。"""
+        # keys をここで取得することで all_sprites.update() だけで動く
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.speed
@@ -83,18 +90,28 @@ class Player(pg.sprite.Sprite):
         self.rect.clamp_ip(screen.get_rect())
 
 class Pencil(pg.sprite.Sprite):
+    """プレイヤーが発射する「えんぴつ」弾を表すクラス。"""
     def __init__(self, x, y):
+        """
+        弾を初期化。
+
+        Args:
+            x (int): 発射位置のX座標。
+            y (int): 発射位置のY座標。
+        """
         super().__init__()
         self.image = pencil_img
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = -12
 
     def update(self):
+        """弾を上方向に移動し、画面外で消去する。"""
         self.rect.y += self.speed
         if self.rect.bottom < 0:
             self.kill()
 
 class Enemy(pg.sprite.Sprite):
+    """課題（敵）キャラクターを表すクラス。下方向に移動し、一定間隔で弾を撃つ。"""
     def __init__(self):
         super().__init__()
         self.image = enemy_img
@@ -117,13 +134,22 @@ class Enemy(pg.sprite.Sprite):
             self.shoot_delay = random.randint(100, 260)
 
 class Report(pg.sprite.Sprite):
+    """敵が発射する「レポート」弾を表すクラス。"""
     def __init__(self, x, y):
+        """
+        レポート弾を初期化。
+
+        Args:
+            x (int): 発射位置のX座標。
+            y (int): 発射位置のY座標。
+        """        
         super().__init__()
         self.image = report_img
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 6
 
     def update(self):
+        """レポート弾を下方向に移動し、画面外に出たら削除する。"""
         self.rect.y += self.speed
         if self.rect.top > HEIGHT:
             self.kill()
